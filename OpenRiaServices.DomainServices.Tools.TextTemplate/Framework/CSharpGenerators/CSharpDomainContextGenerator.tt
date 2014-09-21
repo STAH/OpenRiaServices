@@ -34,24 +34,24 @@ using OpenRiaServices.DomainServices.Client.ApplicationServices;
 	}
 
 	/// <summary>
-    /// Generates the DomainContext class declaration.
-    /// </summary>
+	/// Generates the DomainContext class declaration.
+	/// </summary>
 	protected virtual void GenerateClassDeclaration()
-	{	
+	{
 		string baseType = "OpenRiaServices.DomainServices.Client.DomainContext";
 		if(typeof(IAuthentication<>).DefinitionIsAssignableFrom(this.DomainServiceDescription.DomainServiceType))
 		{
 			baseType = @"global::OpenRiaServices.DomainServices.Client.ApplicationServices.AuthenticationDomainContextBase";
 		}
-		 
+
 #>
 public sealed partial class <#= this.DomainContextTypeName #> : <#= baseType #>
 <#+
 	}
-	
+
 	/// <summary>
-    /// Generates the DomainContext class constructors.
-    /// </summary>	
+	/// Generates the DomainContext class constructors.
+	/// </summary>
 	protected virtual void GenerateConstructors()
 	{
 		bool requiresSecureEndpoint = this.GetRequiresSecureEndpoint();
@@ -61,11 +61,11 @@ public <#= this.DomainContextTypeName #>() :
 	this(new Uri("<#= relativeServiceUri #>", UriKind.Relative))
 {
 }
-		
+
 public <#= this.DomainContextTypeName #>(Uri serviceUri) : 
 	this(DomainContext.CreateDomainClient(typeof(<#= this.ContractInterfaceName #>), serviceUri, <#= requiresSecureEndpoint.ToString().ToLower() #>))
 {
-	
+
 }
 
 public <#= this.DomainContextTypeName #>(DomainClient domainClient) :
@@ -75,10 +75,10 @@ public <#= this.DomainContextTypeName #>(DomainClient domainClient) :
 }
 <#+
 	}
-	
+
 	/// <summary>
-    /// Generates the EntityContriner property and the nested EntityContainer nested class.
-    /// </summary>		
+	/// Generates the EntityContriner property and the nested EntityContainer nested class.
+	/// </summary>
 	protected virtual void GenerateEntityContainer()
 	{
 		string entityContainerClassName = this.DomainContextTypeName + "EntityContainer";
@@ -88,10 +88,10 @@ protected override EntityContainer CreateEntityContainer()
 	return new <#= entityContainerClassName #>();
 }
 <#+
-		
+
 		this.GenerateEntityContainerClass(entityContainerClassName);
 	}
-	
+
 	private void GenerateEntityContainerClass(string entityContainerClassName)
 	{
 #>
@@ -101,17 +101,17 @@ public <#= entityContainerClassName #>()
 <#+ this.GenerateOpeningBrace(); #>
 <#+
 		HashSet<Type> entityTypesToUse = new HashSet<Type>();
-        foreach (Type entityType in this.DomainServiceDescription.EntityTypes)
-        {
-            entityTypesToUse.Add(entityType);
-        }
+		foreach (Type entityType in this.DomainServiceDescription.EntityTypes)
+		{
+			entityTypesToUse.Add(entityType);
+		}
 		
 		foreach(Type entityType in this.DomainServiceDescription.EntityTypes.OrderBy(t => t.FullName))
 		{
 			if (entityTypesToUse.Any(t => t != entityType && t.IsAssignableFrom(entityType)))
-            {
-                continue;
-            }
+			{
+				continue;
+			}
 			string entitySetOperationsEnumValue = this.GetEntitySetOperationsEnumValue(entityType);
 			string entityTypeName = CodeGenUtilities.GetTypeName(entityType);
 #>
@@ -124,11 +124,11 @@ this.CreateEntitySet<<#= entityTypeName #>>(<#= entitySetOperationsEnumValue #>)
 	}
 	
 	/// <summary>
-    /// Generates the DomainContext class extensibility methods.
-    /// </summary>	
+	/// Generates the DomainContext class extensibility methods.
+	/// </summary>
 	protected virtual void GenerateExtensibilityMethods()
 	{
-#>		
+#>
 partial void OnCreated();
 <#+
 	}

@@ -36,7 +36,7 @@ namespace OpenRiaServices.DomainServices.Tools.TextTemplate.CSharpGenerators
             this.Write("\r\n");
             return this.GenerationEnvironment.ToString();
         }
-	
+
 	private void GenerateEnumNamespace(Type enumType)
 	{
 		
@@ -50,19 +50,19 @@ this.Write(this.ToStringHelper.ToStringWithCulture(enumType.Namespace));
 	private void GenerateEnumTypeDeclaration(Type enumType)
 	{
 		DataContractAttribute dataContractAttr = (DataContractAttribute)Attribute.GetCustomAttribute(enumType, typeof(DataContractAttribute));
-        if (dataContractAttr != null)
-        {
+		if (dataContractAttr != null)
+		{
 			this.GenerateDataContractAttribute(enumType);
 		}
-		
+
 		if (enumType.GetCustomAttributes(typeof(FlagsAttribute), false).Length > 0)
-        {
+		{
 
 this.Write("[System.Flags]\r\n");
 
 
 		}
-		
+
 		
 this.Write("public enum ");
 
@@ -71,29 +71,31 @@ this.Write(this.ToStringHelper.ToStringWithCulture(CodeGenUtilities.GetSafeName(
 
 		
 		Type underlyingType = enumType.GetEnumUnderlyingType();
-        if (underlyingType != typeof(int))
+		if (underlyingType != typeof(int))
 		{
 			
 this.Write(" : ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(CodeGenUtilities.GetTypeName(underlyingType)));
 
+this.Write(" ");
+
 
 		}
 	}
-	
+
 	private void GenerateEnumMemberAttributes(FieldInfo fieldInfo)
-	{	
+	{
 		EnumMemberAttribute enumMemberAttr = (EnumMemberAttribute)Attribute.GetCustomAttribute(fieldInfo, typeof(EnumMemberAttribute));
-        if (enumMemberAttr != null)
-        {
+		if (enumMemberAttr != null)
+		{
 
 this.Write("[System.Runtime.Serialization.EnumMember");
 
 
-            string value = enumMemberAttr.Value;
-            if (!string.IsNullOrEmpty(value))
-            {
+			string value = enumMemberAttr.Value;
+			if (!string.IsNullOrEmpty(value))
+			{
 
 this.Write("(Value=");
 
@@ -102,23 +104,23 @@ this.Write(this.ToStringHelper.ToStringWithCulture(value.ToString()));
 this.Write(")\r\n");
 
 
-            }
+			}
 this.Write("]");
 
 
 		}
-		
+
 		this.GenerateAttributes(fieldInfo.GetCustomAttributes(false).Cast<Attribute>().Where(a => a.GetType() != typeof(EnumMemberAttribute)));
 	}
-	
+
 	private void GenerateEnumMembers(Type enumType)
 	{
 		Type underlyingType = enumType.GetEnumUnderlyingType();
 		string[] memberNames = Enum.GetNames(enumType);
-        Type enumValueType = Enum.GetUnderlyingType(enumType);
-        for (int i = 0; i < memberNames.Length; ++i)
-        {
-            string memberName = memberNames[i];
+		Type enumValueType = Enum.GetUnderlyingType(enumType);
+		for (int i = 0; i < memberNames.Length; ++i)
+		{
+			string memberName = memberNames[i];
 			FieldInfo fieldInfo = enumType.GetField(memberName);
 			
 			this.GenerateEnumMemberAttributes(fieldInfo);
@@ -128,7 +130,7 @@ this.Write("]");
 				object memberValue = fieldInfo.GetRawConstantValue();
 				
 				object[] minMaxValues = null;
-               	CodeGenUtilities.IntegralMinMaxValues.TryGetValue(underlyingType, out minMaxValues);				
+				CodeGenUtilities.IntegralMinMaxValues.TryGetValue(underlyingType, out minMaxValues);
 			
 				if (minMaxValues != null && !memberValue.Equals(minMaxValues[2]) && memberValue.Equals(minMaxValues[0]))
 				{
@@ -146,8 +148,6 @@ this.Write(".MinValue ");
 				else if (minMaxValues != null && memberValue.Equals(minMaxValues[1]))
 				{
 
-this.Write(" \r\n");
-
 this.Write(this.ToStringHelper.ToStringWithCulture(memberName));
 
 this.Write(" = ");
@@ -161,28 +161,24 @@ this.Write(".MaxValue ");
 				else
 				{
 
-this.Write(" \r\n");
-
 this.Write(this.ToStringHelper.ToStringWithCulture(memberName));
 
 this.Write(" = ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(memberValue.ToString()));
 
-this.Write(" ");
-
 
 				}
-				
+
 				if(i + 1 < memberNames.Length)
 				{
 					
-this.Write(",");
+this.Write(",\r\n");
 
 
 				}
 			}
-		}			
+		}
 	}
 
 
@@ -268,9 +264,9 @@ this.Write("\r\n");
 	protected virtual void GenerateAttributes(IEnumerable<Attribute> attributes, bool forcePropagation)
 	{
 		foreach (Attribute attribute in attributes.OrderBy(a => a.GetType().Name))
-        {
+		{
 			AttributeDeclaration attributeDeclaration = AttributeGeneratorHelper.GetAttributeDeclaration(attribute, this.ClientCodeGenerator, forcePropagation);
-            if (attributeDeclaration == null || attributeDeclaration.HasErrors)
+			if (attributeDeclaration == null || attributeDeclaration.HasErrors)
 			{
 				continue;
 			}
@@ -285,10 +281,10 @@ this.Write("(");
 
 
 			if (attributeDeclaration.ConstructorArguments.Count > 0)
-            {
+			{
 				for (int i = 0; i < attributeDeclaration.ConstructorArguments.Count; i++)
-            	{
-                	object value = attributeDeclaration.ConstructorArguments[i];
+				{
+					object value = attributeDeclaration.ConstructorArguments[i];
 					string stringValue = AttributeGeneratorHelper.ConvertValueToCode(value, true);
 					
 this.Write(this.ToStringHelper.ToStringWithCulture(stringValue));
@@ -301,12 +297,12 @@ this.Write(", ");
 
 
 					}
-	            }
+				}
 			}
 			if (attributeDeclaration.NamedParameters.Count > 0)
-            {
+			{
 				if (attributeDeclaration.ConstructorArguments.Count > 0)
-            	{
+				{
 					
 this.Write(", ");
 
@@ -314,9 +310,9 @@ this.Write(", ");
 				}
 				
 				for (int i = 0; i < attributeDeclaration.NamedParameters.Count; i++)
-                {
-                    KeyValuePair<string, object> pair = attributeDeclaration.NamedParameters.ElementAt(i);
-                    string stringValue = AttributeGeneratorHelper.ConvertValueToCode(pair.Value, true);
+				{
+					KeyValuePair<string, object> pair = attributeDeclaration.NamedParameters.ElementAt(i);
+					string stringValue = AttributeGeneratorHelper.ConvertValueToCode(pair.Value, true);
 					
 this.Write(this.ToStringHelper.ToStringWithCulture(pair.Key));
 
@@ -325,14 +321,14 @@ this.Write("=");
 this.Write(this.ToStringHelper.ToStringWithCulture(stringValue));
 
 
-                    if (i + 1 < attributeDeclaration.NamedParameters.Count)
-                    {
+					if (i + 1 < attributeDeclaration.NamedParameters.Count)
+					{
 					
 this.Write(",");
 
 
-                    }
-                }
+					}
+				}
 			}
 
 this.Write(")]\r\n");
@@ -368,7 +364,7 @@ this.Write("\"");
 this.Write(")]\r\n");
 
 
-	}	
+	}
 
     }
 }

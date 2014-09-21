@@ -15,11 +15,11 @@
 
 <# this.Generate(); #>
 
-<#+	
+<#+
 	private void GenerateCustomMethod(DomainOperationEntry customMethod)
 	{
 		string methodInvokingName = "On" + customMethod.Name + "Invoking";
-        string methodInvokedName = "On" + customMethod.Name + "Invoked";		
+		string methodInvokedName = "On" + customMethod.Name + "Invoked";		
 		List<KeyValuePair<string, string>> customMethodParameters = new List<KeyValuePair<string, string>>();
 		List<DomainOperationParameter> domainOperationparameterList = new List<DomainOperationParameter>();
 		for(int i = 1; i < customMethod.Parameters.Count(); i++)
@@ -36,13 +36,13 @@
 public void <#= customMethod.Name #>(<#+
 this.GenerateParameterDeclaration(domainOperationparameterList, true);
 #>)
-<#+		
+<#+
 		this.GenerateOpeningBrace();
 #>
 this.<#= methodInvokingName #>(<#+ this.GenerateParametersForMethodCall(domainOperationparameterList); #>);
 base.InvokeAction("<#= customMethod.Name #>"<#+ if(domainOperationparameterList.Count > 0){#>, <#+ this.GenerateParametersForMethodCall(domainOperationparameterList); }#>);
 this.<#= methodInvokedName #>();
-<#+		
+<#+
 		this.GenerateClosingBrace();
 #>
 partial void <#= methodInvokingName #>(<#+ this.GenerateParameterDeclaration(domainOperationparameterList, false); #>);
@@ -62,17 +62,17 @@ partial void <#= methodInvokedName #>();
 			}
 		}
 	}
-	
+
 	private void GenerateCustomMethodProperties(DomainOperationEntry customMethod)
 	{
 #>
 [System.ComponentModel.DataAnnotations.Display(AutoGenerateField=false)]
 public bool Can<#= customMethod.Name #>
 {
-    get
-    {
-        return base.CanInvokeAction("<#= customMethod.Name #>");
-    }
+	get
+	{
+		return base.CanInvokeAction("<#= customMethod.Name #>");
+	}
 }
 
 [System.ComponentModel.DataAnnotations.Display(AutoGenerateField=false)]
@@ -98,7 +98,7 @@ public bool Is<#= customMethod.Name #>Invoked
 		{
 #>
 public override object GetIdentity()
-<#+  
+<#+
 			this.GenerateOpeningBrace();
 			if(keyNames.Count() == 1)
 			{
@@ -110,7 +110,7 @@ return this.<#= keyNames[0] #>;
 			{
 				if(nullableKeyNames.Count() > 0)
 				{
-					#>if(<#+ 
+					#>if(<#+
 						for(int i = 0; i < nullableKeyNames.Count(); i++)
 						{
 							#>this.<#= nullableKeyNames[i] #> == null<#+
@@ -118,7 +118,7 @@ return this.<#= keyNames[0] #>;
 							{
 								#> || <#+
 							}
-						}	
+						}
 #>)
 {
 	return null;
@@ -134,15 +134,15 @@ for(int i = 0; i < keyNames.Count(); i++)
 	{
 		#>, <#+
 	}
-}	
+}
 #>);
 <#+
-				
+
 			}
 			this.GenerateClosingBrace();
 		}
 	}
-	
+
 	private void GenerateAdditionalUserCode()
 	{
 		// Generate Properties / methods for IPrincipal and IIdentity interfaces. We are guaranteed to have properties called Name and Roles.
@@ -151,43 +151,43 @@ for(int i = 0; i < keyNames.Count(); i++)
 #>
 string global::System.Security.Principal.IIdentity.AuthenticationType
 {
-    get
-    {
-        return string.Empty;
-    }
+	get
+	{
+		return string.Empty;
+	}
 }
 
 public bool IsAuthenticated
 {
-    get
-    {
-        return (true != string.IsNullOrEmpty(this.Name));
-    }
+	get
+	{
+		return (true != string.IsNullOrEmpty(this.Name));
+	}
 }
 
 string global::System.Security.Principal.IIdentity.Name
 {
-    get
-    {
-        return this.Name;
-    }
+	get
+	{
+		return this.Name;
+	}
 }
 
 global::System.Security.Principal.IIdentity global::System.Security.Principal.IPrincipal.Identity
 {
-    get
-    {
-        return this;
-    }
+	get
+	{
+		return this;
+	}
 }
 
 public bool IsInRole(string role)
 {
-    if ((this.Roles == null))
-    {
-        return false;
-    }
-    return global::System.Linq.Enumerable.Contains(this.Roles, role);
+	if ((this.Roles == null))
+	{
+		return false;
+	}
+	return global::System.Linq.Enumerable.Contains(this.Roles, role);
 }
 <#+
 	}

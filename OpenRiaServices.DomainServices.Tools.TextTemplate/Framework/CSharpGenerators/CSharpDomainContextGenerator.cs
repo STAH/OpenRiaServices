@@ -34,8 +34,7 @@ namespace OpenRiaServices.DomainServices.Tools.TextTemplate.CSharpGenerators
         public override string TransformText()
         {
             this.Write("\r\n");
-            this.Write("\n");
-            this.Write("\n\n");
+            this.Write("\r\n");
             this.Write("\r\n");
             this.Write("\r\n");
             this.Write("\r\n\r\n");
@@ -63,16 +62,16 @@ using OpenRiaServices.DomainServices.Client.ApplicationServices;
 	}
 
 	/// <summary>
-    /// Generates the DomainContext class declaration.
-    /// </summary>
+	/// Generates the DomainContext class declaration.
+	/// </summary>
 	protected virtual void GenerateClassDeclaration()
-	{	
+	{
 		string baseType = "OpenRiaServices.DomainServices.Client.DomainContext";
 		if(typeof(IAuthentication<>).DefinitionIsAssignableFrom(this.DomainServiceDescription.DomainServiceType))
 		{
 			baseType = @"global::OpenRiaServices.DomainServices.Client.ApplicationServices.AuthenticationDomainContextBase";
 		}
-		 
+
 
 this.Write("public sealed partial class ");
 
@@ -86,10 +85,10 @@ this.Write("\r\n");
 
 
 	}
-	
+
 	/// <summary>
-    /// Generates the DomainContext class constructors.
-    /// </summary>	
+	/// Generates the DomainContext class constructors.
+	/// </summary>
 	protected virtual void GenerateConstructors()
 	{
 		bool requiresSecureEndpoint = this.GetRequiresSecureEndpoint();
@@ -103,7 +102,7 @@ this.Write("() : \r\n\tthis(new Uri(\"");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(relativeServiceUri));
 
-this.Write("\", UriKind.Relative))\r\n{\r\n}\r\n\t\t\r\npublic ");
+this.Write("\", UriKind.Relative))\r\n{\r\n}\r\n\r\npublic ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(this.DomainContextTypeName));
 
@@ -115,7 +114,7 @@ this.Write("), serviceUri, ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(requiresSecureEndpoint.ToString().ToLower()));
 
-this.Write("))\r\n{\r\n\t\r\n}\r\n\r\npublic ");
+this.Write("))\r\n{\r\n\r\n}\r\n\r\npublic ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(this.DomainContextTypeName));
 
@@ -123,10 +122,10 @@ this.Write("(DomainClient domainClient) :\r\n\tbase(domainClient)\r\n{\r\n\tthis
 
 
 	}
-	
+
 	/// <summary>
-    /// Generates the EntityContriner property and the nested EntityContainer nested class.
-    /// </summary>		
+	/// Generates the EntityContriner property and the nested EntityContainer nested class.
+	/// </summary>
 	protected virtual void GenerateEntityContainer()
 	{
 		string entityContainerClassName = this.DomainContextTypeName + "EntityContainer";
@@ -138,10 +137,10 @@ this.Write(this.ToStringHelper.ToStringWithCulture(entityContainerClassName));
 this.Write("();\r\n}\r\n");
 
 
-		
+
 		this.GenerateEntityContainerClass(entityContainerClassName);
 	}
-	
+
 	private void GenerateEntityContainerClass(string entityContainerClassName)
 	{
 
@@ -161,17 +160,17 @@ this.Write("()\r\n");
  this.GenerateOpeningBrace(); 
 
 		HashSet<Type> entityTypesToUse = new HashSet<Type>();
-        foreach (Type entityType in this.DomainServiceDescription.EntityTypes)
-        {
-            entityTypesToUse.Add(entityType);
-        }
+		foreach (Type entityType in this.DomainServiceDescription.EntityTypes)
+		{
+			entityTypesToUse.Add(entityType);
+		}
 		
 		foreach(Type entityType in this.DomainServiceDescription.EntityTypes.OrderBy(t => t.FullName))
 		{
 			if (entityTypesToUse.Any(t => t != entityType && t.IsAssignableFrom(entityType)))
-            {
-                continue;
-            }
+			{
+				continue;
+			}
 			string entitySetOperationsEnumValue = this.GetEntitySetOperationsEnumValue(entityType);
 			string entityTypeName = CodeGenUtilities.GetTypeName(entityType);
 
@@ -193,12 +192,12 @@ this.Write(");\r\n");
 	}
 	
 	/// <summary>
-    /// Generates the DomainContext class extensibility methods.
-    /// </summary>	
+	/// Generates the DomainContext class extensibility methods.
+	/// </summary>
 	protected virtual void GenerateExtensibilityMethods()
 	{
 
-this.Write("\t\t\r\npartial void OnCreated();\r\n");
+this.Write("partial void OnCreated();\r\n");
 
 
 	}
@@ -214,7 +213,7 @@ this.Write("\t\t\r\npartial void OnCreated();\r\n");
 			this.GenerateCustomMethod(domainMethod);
 		}
 	}
-	
+
 	/// <summary>
 	/// Generates a custom method.
 	/// </summary>
@@ -222,7 +221,7 @@ this.Write("\t\t\r\npartial void OnCreated();\r\n");
 	protected virtual void GenerateCustomMethod(DomainOperationEntry domainMethod)
 	{
 
-this.Write("\npublic void ");
+this.Write("public void ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(domainMethod.Name));
 
@@ -256,12 +255,10 @@ this.Write(", ");
 			}
 		}
 
-this.Write(")\n");
+this.Write(")\r\n");
 
 
 		this.GenerateOpeningBrace();
-
-this.Write("\n");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(paramInfos[0].Name));
 
@@ -287,12 +284,12 @@ this.Write(", ");
 				}
 			}
 		
-this.Write(");\n");
+this.Write(");\r\n");
 
 
 		this.GenerateClosingBrace();
 	}
-	
+
 	/// <summary>
 	/// Generates the EntitySet properties.
 	/// </summary>
@@ -303,7 +300,7 @@ this.Write(");\n");
 			this.GenerateEntitySet(entityType);
 		}
 	}
-	
+
 	/// <summary>
 	/// Generates the EntitySet property.
 	/// </summary>
@@ -313,7 +310,7 @@ this.Write(");\n");
 		string propertyName = Naming.MakePluralName(entityType.Name);
 		string entityTypeName = CodeGenUtilities.GetTypeName(entityType);
 
-this.Write("\npublic EntitySet<");
+this.Write("public EntitySet<");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(entityTypeName));
 
@@ -321,15 +318,15 @@ this.Write("> ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(propertyName));
 
-this.Write("\n{\n    get\n    {\n        return base.EntityContainer.GetEntitySet<");
+this.Write("\r\n{\r\n\tget\r\n\t{\r\n\t\treturn base.EntityContainer.GetEntitySet<");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(entityTypeName));
 
-this.Write(">();\n    }\n}\n");
+this.Write(">();\r\n\t}\r\n}\r\n");
 
 
 	}
-	
+
 	/// <summary>
 	/// Generates the query methods.
 	/// </summary>
@@ -340,7 +337,7 @@ this.Write(">();\n    }\n}\n");
 			this.GenerateQueryMethod(queryMethod);
 		}
 	}
-	
+
 	/// <summary>
 	/// Generates a query method.
 	/// </summary>
@@ -352,16 +349,16 @@ this.Write(">();\n    }\n}\n");
 		this.GenerateOpeningBrace();
 		this.GenerateEntityQueryMethodBody(domainOperationEntry, queryMethodName);
 		this.GenerateClosingBrace();
-	}	
+	}
 	
 	private void GenerateEntityQueryMethodDeclaration(DomainOperationEntry domainOperationEntry, string queryMethodName)
-	{		
+	{
 		// First generate custom attributes for the qery method
 		IEnumerable<Attribute> methodAttributes = domainOperationEntry.Attributes.Cast<Attribute>();
 		this.GenerateAttributes(methodAttributes);
-				
 
-this.Write("\npublic EntityQuery<");
+
+this.Write("public EntityQuery<");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(this.GetEntityQueryMethodElementReturnTypeName(domainOperationEntry)));
 
@@ -374,13 +371,13 @@ this.Write("(");
 
 	this.GenerateParameterDeclaration(domainOperationEntry.Parameters.AsEnumerable(), true);
 
-this.Write(")\n");
+this.Write(")\r\n");
 
 
 	}
 	
 	private void GenerateEntityQueryMethodBody(DomainOperationEntry domainOperationEntry, string queryMethodName)
-	{	
+	{
 		string parameterDictionaryName = this.GenerateServiceOpMethodBody(domainOperationEntry, queryMethodName);
 		this.GenerateEntityQueryMethodReturn(domainOperationEntry, parameterDictionaryName);
 	}
@@ -388,9 +385,9 @@ this.Write(")\n");
 	private void GenerateEntityQueryMethodReturn(DomainOperationEntry domainOperationEntry, string parameterDictionaryName)
 	{
 		QueryAttribute queryAttribute = (QueryAttribute)domainOperationEntry.OperationAttribute;
-		
 
-this.Write("\nreturn base.CreateQuery<");
+
+this.Write("return base.CreateQuery<");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(this.GetEntityQueryMethodElementReturnTypeName(domainOperationEntry)));
 
@@ -410,9 +407,9 @@ this.Write(", ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(CodeGenUtilities.GetBooleanString(queryAttribute.IsComposable, true)));
 
-this.Write(");\n");
+this.Write(");\r\n");
 
-	
+
 	}
 	
 	private string GetEntityQueryMethodElementReturnTypeName(DomainOperationEntry domainOperationEntry)
@@ -454,7 +451,7 @@ protected virtual void GenerateInvokeOperation(DomainOperationEntry domainOperat
 /// <param name="domainOperationEntry">The invoke operation to be generated.</param>
 /// <param name="invokeKind">The type of invoke operation to be generated.</param>
 protected virtual void GenerateInvokeOperation(DomainOperationEntry domainOperationEntry, InvokeKind invokeKind)
-{	
+{
 	this.GenerateInvokeOperationDeclaration(domainOperationEntry, invokeKind);
 
 	this.GenerateOpeningBrace();
@@ -586,9 +583,8 @@ this.Write("null, null);\r\n");
 
 		}
 	}
-		
-}
 
+}
 
 private string GenerateServiceOpMethodBody(DomainOperationEntry domainOperationEntry, string methodName)
 {
@@ -602,13 +598,13 @@ this.Write("Dictionary<string, object> ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(parameterDictionaryName));
 
-this.Write(" = new Dictionary<string, object>();\t\t\t\r\n");
+this.Write(" = new Dictionary<string, object>();\r\n");
 
 
 		foreach(DomainOperationParameter paramInfo in domainOperationEntryParameters)
 		{
 			if (!this.RegisterEnumTypeIfNecessary(paramInfo.ParameterType, domainOperationEntry))
-            {
+			{
 				return String.Empty;
 			}
 			string paramName = CodeGenUtilities.GetSafeName(paramInfo.Name);
@@ -628,7 +624,7 @@ this.Write(");\r\n");
 
 		}
 	}
-	
+
 
 this.Write("this.ValidateMethod(\"");
 
@@ -647,26 +643,26 @@ this.Write(");\r\n");
 
 
 	/// <summary>
-    /// Generates the DomainContext class constructors.
-    /// </summary>	
+	/// Generates the DomainContext class constructors.
+	/// </summary>
 	protected void GenerateServiceContractInterface()
-	{	
+	{
 		HashSet<Type> registeredServiceTypes = new HashSet<Type>();
-		List<DomainOperationEntry> contractMethods = new List<DomainOperationEntry>();		
+		List<DomainOperationEntry> contractMethods = new List<DomainOperationEntry>();
 		foreach (DomainOperationEntry operation in this.DomainServiceDescription.DomainOperationEntries
-            .Where(op => op.Operation == DomainOperation.Query || op.Operation == DomainOperation.Invoke || op.Operation == DomainOperation.Custom)
-            .OrderBy(op => op.Name))
-        {
-            if (operation.Operation == DomainOperation.Custom)
-            {
-                IEnumerable<Attribute> knownTypeServiceAttributes = this.GetContractServiceKnownTypes(operation, registeredServiceTypes);
+			.Where(op => op.Operation == DomainOperation.Query || op.Operation == DomainOperation.Invoke || op.Operation == DomainOperation.Custom)
+			.OrderBy(op => op.Name))
+		{
+			if (operation.Operation == DomainOperation.Custom)
+			{
+				IEnumerable<Attribute> knownTypeServiceAttributes = this.GetContractServiceKnownTypes(operation, registeredServiceTypes);
 				this.GenerateAttributes(knownTypeServiceAttributes, true);
-            }
-            else
-            {
-                contractMethods.Add(operation);
-            }
-        }
+			}
+			else
+			{
+				contractMethods.Add(operation);
+			}
+		}
 
 
 this.Write("[System.ServiceModel.ServiceContract()]\r\npublic interface ");
@@ -683,11 +679,11 @@ this.Write("\r\n");
 		}
 		
 		if (this.DomainServiceDescription.DomainOperationEntries
-            .Where(op => (op.Operation == DomainOperation.Delete || op.Operation == DomainOperation.Insert 
-                        || op.Operation == DomainOperation.Update || op.Operation == DomainOperation.Custom)).Any())
-        {
-            this.GenerateContractSubmitChangesMethod();
-        }
+			.Where(op => (op.Operation == DomainOperation.Delete || op.Operation == DomainOperation.Insert 
+					|| op.Operation == DomainOperation.Update || op.Operation == DomainOperation.Custom)).Any())
+		{
+			this.GenerateContractSubmitChangesMethod();
+		}
 		this.GenerateClosingBrace();
 	}
 	
@@ -711,8 +707,8 @@ this.Write("(\r\n");
 
 
 		foreach (DomainOperationParameter parameter in operation.Parameters)
-        {
-            Type parameterType = CodeGenUtilities.TranslateType(parameter.ParameterType);
+		{
+			Type parameterType = CodeGenUtilities.TranslateType(parameter.ParameterType);
 
 this.Write(this.ToStringHelper.ToStringWithCulture(CodeGenUtilities.GetTypeName(parameterType)));
 
@@ -723,11 +719,11 @@ this.Write(this.ToStringHelper.ToStringWithCulture(parameter.Name));
 this.Write(",\r\n");
 
 
-        }
+		}
 
 this.Write("System.AsyncCallback callback, object asyncState);\r\n");
 
- 
+
 		string returnTypeName = CSharpDomainContextGenerator.GetEndOperationReturnType(operation);
 
 this.Write("\t\t\r\n");
@@ -749,7 +745,7 @@ this.Write("(System.IAsyncResult result);\r\n");
 
 this.Write("IAsyncResult BeginSubmitChanges(IEnumerable<ChangeSetEntry> changeSet, AsyncCallb" +
         "ack callback, object asyncState);\r\nIEnumerable<ChangeSetEntry> EndSubmitChanges(" +
-        "IAsyncResult result);\t\t\t\r\n");
+        "IAsyncResult result);\r\n");
 
 
 	}
@@ -761,7 +757,7 @@ this.Write("IAsyncResult BeginSubmitChanges(IEnumerable<ChangeSetEntry> changeSe
 		string actionString = string.Format(CultureInfo.InvariantCulture, DomainContextGenerator.DefaultActionSchema, domainServiceName, operationName);
 		string replyActionString = string.Format(CultureInfo.InvariantCulture, DomainContextGenerator.DefaultReplyActionSchema, domainServiceName, operationName);
 		string faultActionString = string.Format(CultureInfo.InvariantCulture, DomainContextGenerator.DefaultFaultActionSchema, domainServiceName, operationName, faultTypeName);
-		
+
 
 this.Write("[OperationContract(AsyncPattern=true, Action=\"");
 
@@ -771,7 +767,7 @@ this.Write("\", ReplyAction=\"");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(replyActionString));
 
-this.Write("\")]\t\r\n");
+this.Write("\")]\r\n");
 
 
 	}
@@ -858,9 +854,9 @@ this.Write("\r\n");
 	protected virtual void GenerateAttributes(IEnumerable<Attribute> attributes, bool forcePropagation)
 	{
 		foreach (Attribute attribute in attributes.OrderBy(a => a.GetType().Name))
-        {
+		{
 			AttributeDeclaration attributeDeclaration = AttributeGeneratorHelper.GetAttributeDeclaration(attribute, this.ClientCodeGenerator, forcePropagation);
-            if (attributeDeclaration == null || attributeDeclaration.HasErrors)
+			if (attributeDeclaration == null || attributeDeclaration.HasErrors)
 			{
 				continue;
 			}
@@ -875,10 +871,10 @@ this.Write("(");
 
 
 			if (attributeDeclaration.ConstructorArguments.Count > 0)
-            {
+			{
 				for (int i = 0; i < attributeDeclaration.ConstructorArguments.Count; i++)
-            	{
-                	object value = attributeDeclaration.ConstructorArguments[i];
+				{
+					object value = attributeDeclaration.ConstructorArguments[i];
 					string stringValue = AttributeGeneratorHelper.ConvertValueToCode(value, true);
 					
 this.Write(this.ToStringHelper.ToStringWithCulture(stringValue));
@@ -891,12 +887,12 @@ this.Write(", ");
 
 
 					}
-	            }
+				}
 			}
 			if (attributeDeclaration.NamedParameters.Count > 0)
-            {
+			{
 				if (attributeDeclaration.ConstructorArguments.Count > 0)
-            	{
+				{
 					
 this.Write(", ");
 
@@ -904,9 +900,9 @@ this.Write(", ");
 				}
 				
 				for (int i = 0; i < attributeDeclaration.NamedParameters.Count; i++)
-                {
-                    KeyValuePair<string, object> pair = attributeDeclaration.NamedParameters.ElementAt(i);
-                    string stringValue = AttributeGeneratorHelper.ConvertValueToCode(pair.Value, true);
+				{
+					KeyValuePair<string, object> pair = attributeDeclaration.NamedParameters.ElementAt(i);
+					string stringValue = AttributeGeneratorHelper.ConvertValueToCode(pair.Value, true);
 					
 this.Write(this.ToStringHelper.ToStringWithCulture(pair.Key));
 
@@ -915,14 +911,14 @@ this.Write("=");
 this.Write(this.ToStringHelper.ToStringWithCulture(stringValue));
 
 
-                    if (i + 1 < attributeDeclaration.NamedParameters.Count)
-                    {
+					if (i + 1 < attributeDeclaration.NamedParameters.Count)
+					{
 					
 this.Write(",");
 
 
-                    }
-                }
+					}
+				}
 			}
 
 this.Write(")]\r\n");
@@ -958,7 +954,7 @@ this.Write("\"");
 this.Write(")]\r\n");
 
 
-	}	
+	}
 
     }
 }

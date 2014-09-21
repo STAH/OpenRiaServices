@@ -8,8 +8,8 @@ namespace <#= this.Type.Namespace #>
 	}
 	
 	/// <summary>
-    /// Generates the type declaration.
-    /// </summary>
+	/// Generates the type declaration.
+	/// </summary>
 	protected virtual void GenerateClassDeclaration()
 	{
 		this.GenerateTypeAttributes();
@@ -22,18 +22,18 @@ namespace <#= this.Type.Namespace #>
 	}
 	
 	private string GetClassVisibility()
-    {
-        string visibility = "public";
-        if (this.IsAbstract)
-        {
-            visibility += " abstract";
-        }
-        if (!this.IsAbstract && !this.GetDerivedTypes().Any())
-        {
-            visibility += " sealed";
-        }
-        return visibility;
-    }
+	{
+		string visibility = "public";
+		if (this.IsAbstract)
+		{
+			visibility += " abstract";
+		}
+		if (!this.IsAbstract && !this.GetDerivedTypes().Any())
+		{
+			visibility += " sealed";
+		}
+		return visibility;
+	}
 	
 	private void GenerateTypeAttributes()
 	{
@@ -44,7 +44,7 @@ namespace <#= this.Type.Namespace #>
 		if(!this.IsDerivedType)
 		{
 			foreach (Type derivedType in this.GetDerivedTypes().OrderBy(t => t.FullName))
-            {
+			{
 #>
 [System.Runtime.Serialization.KnownType(typeof(<#= CodeGenUtilities.GetTypeName(derivedType) #>))]
 <#+
@@ -53,8 +53,8 @@ namespace <#= this.Type.Namespace #>
 	}
 	
 	/// <summary>
-    /// Generates the data contract type constructor.
-    /// </summary>
+	/// Generates the data contract type constructor.
+	/// </summary>
 	protected virtual void GenerateConstructor()
 	{
 		string ctorVisibility = this.IsAbstract ? "protected" : "public";
@@ -75,9 +75,9 @@ namespace <#= this.Type.Namespace #>
 	}
 	
 	/// <summary>
-    /// Generates the code for a property.
+	/// Generates the code for a property.
 	/// <param name="propertyDescriptor">The PropertyDescriptor for which the property is to be generated.</param>
-    /// </summary>
+	/// </summary>
 	protected virtual void GenerateProperty(PropertyDescriptor propertyDescriptor)
 	{
 		this.GeneratePropertyDeclaration(propertyDescriptor);
@@ -95,7 +95,7 @@ namespace <#= this.Type.Namespace #>
 get
 {
 	return this.<#= fieldName #>;
-} 
+}
 <#+
 	}
 	
@@ -104,16 +104,16 @@ get
 		string fieldName = CodeGenUtilities.MakeCompliantFieldName(propertyDescriptor.Name);
 #>
 set 
-<#+ this.GenerateOpeningBrace(); 
+<#+ this.GenerateOpeningBrace();
 #>
 if(this.<#= fieldName #> != value)
-<#+ this.GenerateOpeningBrace(); 
+<#+ this.GenerateOpeningBrace();
 #>
-this.On<#= propertyDescriptor.Name #>Changing(value);	
+this.On<#= propertyDescriptor.Name #>Changing(value);
 <#+
 		bool propertyIsReadOnly = this.IsPropertyReadOnly(propertyDescriptor);
-        if (!propertyIsReadOnly)
-        {
+		if (!propertyIsReadOnly)
+		{
 #>
 this.RaiseDataMemberChanging("<#= propertyDescriptor.Name #>");
 <#+
@@ -123,7 +123,7 @@ this.ValidateProperty("<#= propertyDescriptor.Name #>", value);
 this.<#= fieldName #> = value;
 <#+
 		if (!propertyIsReadOnly)
-        {
+		{
 #>
 this.RaiseDataMemberChanged("<#= propertyDescriptor.Name #>");
 <#+
@@ -133,7 +133,7 @@ this.RaiseDataMemberChanged("<#= propertyDescriptor.Name #>");
 #>
 this.RaisePropertyChanged("<#= propertyDescriptor.Name #>");
 <#+
-		}	
+		}
 #>
 this.On<#= propertyDescriptor.Name #>Changed();
 <#+
@@ -150,9 +150,9 @@ this.On<#= propertyDescriptor.Name #>Changed();
 private <#= propertyTypeName #> <#= fieldName #>;
 <#+
 	}
-	
+
 	private void GeneratePropertyDeclaration(PropertyDescriptor propertyDescriptor)
-	{		
+	{
 		Type propertyType = CodeGenUtilities.TranslateType(propertyDescriptor.PropertyType);
 		string propertyTypeName = CodeGenUtilities.GetTypeName(propertyType);
 		IEnumerable<Attribute> propAttributes = this.GetPropertyAttributes(propertyDescriptor, propertyType);
@@ -173,7 +173,7 @@ partial void OnCreated();
 <#+
 		foreach(PropertyDescriptor pd in this.NotificationMethodList)
 		{
-			Type propType = CodeGenUtilities.TranslateType(pd.PropertyType);			
+			Type propType = CodeGenUtilities.TranslateType(pd.PropertyType);
 			string propertyTypeName = CodeGenUtilities.GetTypeName(propType);
 #>
 partial void On<#= pd.Name #>Changing(<#= propertyTypeName #> value);

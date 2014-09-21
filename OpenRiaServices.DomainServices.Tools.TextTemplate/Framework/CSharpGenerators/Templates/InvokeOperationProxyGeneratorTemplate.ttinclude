@@ -31,7 +31,7 @@ protected virtual void GenerateInvokeOperation(DomainOperationEntry domainOperat
 /// <param name="domainOperationEntry">The invoke operation to be generated.</param>
 /// <param name="invokeKind">The type of invoke operation to be generated.</param>
 protected virtual void GenerateInvokeOperation(DomainOperationEntry domainOperationEntry, InvokeKind invokeKind)
-{	
+{
 	this.GenerateInvokeOperationDeclaration(domainOperationEntry, invokeKind);
 
 	this.GenerateOpeningBrace();
@@ -106,9 +106,8 @@ null, null);
 <#+
 		}
 	}
-		
-}
 
+}
 
 private string GenerateServiceOpMethodBody(DomainOperationEntry domainOperationEntry, string methodName)
 {
@@ -118,12 +117,12 @@ private string GenerateServiceOpMethodBody(DomainOperationEntry domainOperationE
 	{
 		parameterDictionaryName = "parameters";
 #>
-Dictionary<string, object> <#= parameterDictionaryName #> = new Dictionary<string, object>();			
+Dictionary<string, object> <#= parameterDictionaryName #> = new Dictionary<string, object>();
 <#+
 		foreach(DomainOperationParameter paramInfo in domainOperationEntryParameters)
 		{
 			if (!this.RegisterEnumTypeIfNecessary(paramInfo.ParameterType, domainOperationEntry))
-            {
+			{
 				return String.Empty;
 			}
 			string paramName = CodeGenUtilities.GetSafeName(paramInfo.Name);
@@ -132,7 +131,7 @@ Dictionary<string, object> <#= parameterDictionaryName #> = new Dictionary<strin
 <#+
 		}
 	}
-	
+
 #>
 this.ValidateMethod("<#= methodName #>", <#= parameterDictionaryName #>);
 <#+

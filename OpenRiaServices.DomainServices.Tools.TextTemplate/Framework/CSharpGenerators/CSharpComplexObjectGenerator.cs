@@ -120,9 +120,9 @@ this.Write("\r\n");
 	protected virtual void GenerateAttributes(IEnumerable<Attribute> attributes, bool forcePropagation)
 	{
 		foreach (Attribute attribute in attributes.OrderBy(a => a.GetType().Name))
-        {
+		{
 			AttributeDeclaration attributeDeclaration = AttributeGeneratorHelper.GetAttributeDeclaration(attribute, this.ClientCodeGenerator, forcePropagation);
-            if (attributeDeclaration == null || attributeDeclaration.HasErrors)
+			if (attributeDeclaration == null || attributeDeclaration.HasErrors)
 			{
 				continue;
 			}
@@ -137,10 +137,10 @@ this.Write("(");
 
 
 			if (attributeDeclaration.ConstructorArguments.Count > 0)
-            {
+			{
 				for (int i = 0; i < attributeDeclaration.ConstructorArguments.Count; i++)
-            	{
-                	object value = attributeDeclaration.ConstructorArguments[i];
+				{
+					object value = attributeDeclaration.ConstructorArguments[i];
 					string stringValue = AttributeGeneratorHelper.ConvertValueToCode(value, true);
 					
 this.Write(this.ToStringHelper.ToStringWithCulture(stringValue));
@@ -153,12 +153,12 @@ this.Write(", ");
 
 
 					}
-	            }
+				}
 			}
 			if (attributeDeclaration.NamedParameters.Count > 0)
-            {
+			{
 				if (attributeDeclaration.ConstructorArguments.Count > 0)
-            	{
+				{
 					
 this.Write(", ");
 
@@ -166,9 +166,9 @@ this.Write(", ");
 				}
 				
 				for (int i = 0; i < attributeDeclaration.NamedParameters.Count; i++)
-                {
-                    KeyValuePair<string, object> pair = attributeDeclaration.NamedParameters.ElementAt(i);
-                    string stringValue = AttributeGeneratorHelper.ConvertValueToCode(pair.Value, true);
+				{
+					KeyValuePair<string, object> pair = attributeDeclaration.NamedParameters.ElementAt(i);
+					string stringValue = AttributeGeneratorHelper.ConvertValueToCode(pair.Value, true);
 					
 this.Write(this.ToStringHelper.ToStringWithCulture(pair.Key));
 
@@ -177,14 +177,14 @@ this.Write("=");
 this.Write(this.ToStringHelper.ToStringWithCulture(stringValue));
 
 
-                    if (i + 1 < attributeDeclaration.NamedParameters.Count)
-                    {
+					if (i + 1 < attributeDeclaration.NamedParameters.Count)
+					{
 					
 this.Write(",");
 
 
-                    }
-                }
+					}
+				}
 			}
 
 this.Write(")]\r\n");
@@ -220,7 +220,7 @@ this.Write("\"");
 this.Write(")]\r\n");
 
 
-	}	
+	}
 
 
 
@@ -237,8 +237,8 @@ this.Write("\r\n");
 	}
 	
 	/// <summary>
-    /// Generates the type declaration.
-    /// </summary>
+	/// Generates the type declaration.
+	/// </summary>
 	protected virtual void GenerateClassDeclaration()
 	{
 		this.GenerateTypeAttributes();
@@ -262,18 +262,18 @@ this.Write("\r\n");
 	}
 	
 	private string GetClassVisibility()
-    {
-        string visibility = "public";
-        if (this.IsAbstract)
-        {
-            visibility += " abstract";
-        }
-        if (!this.IsAbstract && !this.GetDerivedTypes().Any())
-        {
-            visibility += " sealed";
-        }
-        return visibility;
-    }
+	{
+		string visibility = "public";
+		if (this.IsAbstract)
+		{
+			visibility += " abstract";
+		}
+		if (!this.IsAbstract && !this.GetDerivedTypes().Any())
+		{
+			visibility += " sealed";
+		}
+		return visibility;
+	}
 	
 	private void GenerateTypeAttributes()
 	{
@@ -284,7 +284,7 @@ this.Write("\r\n");
 		if(!this.IsDerivedType)
 		{
 			foreach (Type derivedType in this.GetDerivedTypes().OrderBy(t => t.FullName))
-            {
+			{
 
 this.Write("[System.Runtime.Serialization.KnownType(typeof(");
 
@@ -298,8 +298,8 @@ this.Write("))]\r\n");
 	}
 	
 	/// <summary>
-    /// Generates the data contract type constructor.
-    /// </summary>
+	/// Generates the data contract type constructor.
+	/// </summary>
 	protected virtual void GenerateConstructor()
 	{
 		string ctorVisibility = this.IsAbstract ? "protected" : "public";
@@ -324,9 +324,9 @@ this.Write("()\r\n{\r\n\tthis.OnCreated();\r\n}\r\n");
 	}
 	
 	/// <summary>
-    /// Generates the code for a property.
+	/// Generates the code for a property.
 	/// <param name="propertyDescriptor">The PropertyDescriptor for which the property is to be generated.</param>
-    /// </summary>
+	/// </summary>
 	protected virtual void GenerateProperty(PropertyDescriptor propertyDescriptor)
 	{
 		this.GeneratePropertyDeclaration(propertyDescriptor);
@@ -345,7 +345,7 @@ this.Write("get\r\n{\r\n\treturn this.");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(fieldName));
 
-this.Write(";\r\n} \r\n");
+this.Write(";\r\n}\r\n");
 
 
 	}
@@ -356,7 +356,7 @@ this.Write(";\r\n} \r\n");
 
 this.Write("set \r\n");
 
- this.GenerateOpeningBrace(); 
+ this.GenerateOpeningBrace();
 
 this.Write("if(this.");
 
@@ -364,18 +364,18 @@ this.Write(this.ToStringHelper.ToStringWithCulture(fieldName));
 
 this.Write(" != value)\r\n");
 
- this.GenerateOpeningBrace(); 
+ this.GenerateOpeningBrace();
 
 this.Write("this.On");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(propertyDescriptor.Name));
 
-this.Write("Changing(value);\t\r\n");
+this.Write("Changing(value);\r\n");
 
 
 		bool propertyIsReadOnly = this.IsPropertyReadOnly(propertyDescriptor);
-        if (!propertyIsReadOnly)
-        {
+		if (!propertyIsReadOnly)
+		{
 
 this.Write("this.RaiseDataMemberChanging(\"");
 
@@ -398,7 +398,7 @@ this.Write(" = value;\r\n");
 
 
 		if (!propertyIsReadOnly)
-        {
+		{
 
 this.Write("this.RaiseDataMemberChanged(\"");
 
@@ -418,7 +418,7 @@ this.Write(this.ToStringHelper.ToStringWithCulture(propertyDescriptor.Name));
 this.Write("\");\r\n");
 
 
-		}	
+		}
 
 this.Write("this.On");
 
@@ -449,9 +449,9 @@ this.Write(";\r\n");
 
 
 	}
-	
+
 	private void GeneratePropertyDeclaration(PropertyDescriptor propertyDescriptor)
-	{		
+	{
 		Type propertyType = CodeGenUtilities.TranslateType(propertyDescriptor.PropertyType);
 		string propertyTypeName = CodeGenUtilities.GetTypeName(propertyType);
 		IEnumerable<Attribute> propAttributes = this.GetPropertyAttributes(propertyDescriptor, propertyType);
@@ -482,7 +482,7 @@ this.Write("partial void OnCreated();\r\n");
 
 		foreach(PropertyDescriptor pd in this.NotificationMethodList)
 		{
-			Type propType = CodeGenUtilities.TranslateType(pd.PropertyType);			
+			Type propType = CodeGenUtilities.TranslateType(pd.PropertyType);
 			string propertyTypeName = CodeGenUtilities.GetTypeName(propType);
 
 this.Write("partial void On");

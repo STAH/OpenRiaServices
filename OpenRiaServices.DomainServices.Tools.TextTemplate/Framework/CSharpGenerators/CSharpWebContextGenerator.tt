@@ -9,7 +9,7 @@
 
 <# this.Generate(); #>
 
-<#+ 
+<#+
 	private void GenerateNamespace()
 	{
 		string ns = this.ClientCodeGenerator.Options.ClientRootNamespace;
@@ -32,7 +32,7 @@ public sealed partial class WebContext : OpenRiaServices.DomainServices.Client.A
 	{
 #>
 public WebContext()
-{			
+{
 	this.OnCreated();
 }
 <#+
@@ -47,7 +47,7 @@ public WebContext()
 partial void OnCreated();
 <#+
 	}
-	
+
 	/// <summary>
 	/// Generates the properties on the WebContext class.
 	/// </summary>
@@ -56,10 +56,10 @@ partial void OnCreated();
 #>
 public new static WebContext Current
 {
-    get
-    {
-        return ((WebContext)(OpenRiaServices.DomainServices.Client.ApplicationServices.WebContextBase.Current));
-    }
+	get
+	{
+		return ((WebContext)(OpenRiaServices.DomainServices.Client.ApplicationServices.WebContextBase.Current));
+	}
 }
 <#+
 		
@@ -67,9 +67,9 @@ public new static WebContext Current
 		if(defaultAuthDescription != null)
 		{
 			Type genericType = null;
-            typeof(IAuthentication<>).DefinitionIsAssignableFrom(defaultAuthDescription.DomainServiceType, out genericType);
-            if ((genericType != null) && (genericType.GetGenericArguments().Count() == 1))
-            {
+			typeof(IAuthentication<>).DefinitionIsAssignableFrom(defaultAuthDescription.DomainServiceType, out genericType);
+			if ((genericType != null) && (genericType.GetGenericArguments().Count() == 1))
+			{
 				string typeName = CodeGenUtilities.GetTypeName(genericType.GetGenericArguments()[0]);
 #>
 public new <#= typeName #> User

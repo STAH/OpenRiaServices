@@ -1,25 +1,25 @@
 ﻿<#+
 	/// <summary>
-    /// Generates the DomainContext class constructors.
-    /// </summary>	
+	/// Generates the DomainContext class constructors.
+	/// </summary>
 	protected void GenerateServiceContractInterface()
-	{	
+	{
 		HashSet<Type> registeredServiceTypes = new HashSet<Type>();
-		List<DomainOperationEntry> contractMethods = new List<DomainOperationEntry>();		
+		List<DomainOperationEntry> contractMethods = new List<DomainOperationEntry>();
 		foreach (DomainOperationEntry operation in this.DomainServiceDescription.DomainOperationEntries
-            .Where(op => op.Operation == DomainOperation.Query || op.Operation == DomainOperation.Invoke || op.Operation == DomainOperation.Custom)
-            .OrderBy(op => op.Name))
-        {
-            if (operation.Operation == DomainOperation.Custom)
-            {
-                IEnumerable<Attribute> knownTypeServiceAttributes = this.GetContractServiceKnownTypes(operation, registeredServiceTypes);
+			.Where(op => op.Operation == DomainOperation.Query || op.Operation == DomainOperation.Invoke || op.Operation == DomainOperation.Custom)
+			.OrderBy(op => op.Name))
+		{
+			if (operation.Operation == DomainOperation.Custom)
+			{
+				IEnumerable<Attribute> knownTypeServiceAttributes = this.GetContractServiceKnownTypes(operation, registeredServiceTypes);
 				this.GenerateAttributes(knownTypeServiceAttributes, true);
-            }
-            else
-            {
-                contractMethods.Add(operation);
-            }
-        }
+			}
+			else
+			{
+				contractMethods.Add(operation);
+			}
+		}
 
 #>
 [System.ServiceModel.ServiceContract()]
@@ -32,11 +32,11 @@ public interface <#= this.ContractInterfaceName #>
 		}
 		
 		if (this.DomainServiceDescription.DomainOperationEntries
-            .Where(op => (op.Operation == DomainOperation.Delete || op.Operation == DomainOperation.Insert 
-                        || op.Operation == DomainOperation.Update || op.Operation == DomainOperation.Custom)).Any())
-        {
-            this.GenerateContractSubmitChangesMethod();
-        }
+			.Where(op => (op.Operation == DomainOperation.Delete || op.Operation == DomainOperation.Insert 
+					|| op.Operation == DomainOperation.Update || op.Operation == DomainOperation.Custom)).Any())
+		{
+			this.GenerateContractSubmitChangesMethod();
+		}
 		this.GenerateClosingBrace();
 	}
 	
@@ -50,15 +50,15 @@ public interface <#= this.ContractInterfaceName #>
 System.IAsyncResult Begin<#= operation.Name #>(
 <#+
 		foreach (DomainOperationParameter parameter in operation.Parameters)
-        {
-            Type parameterType = CodeGenUtilities.TranslateType(parameter.ParameterType);
+		{
+			Type parameterType = CodeGenUtilities.TranslateType(parameter.ParameterType);
 #>
 <#= CodeGenUtilities.GetTypeName(parameterType) #> <#= parameter.Name #>,
 <#+
-        }
+		}
 #>
 System.AsyncCallback callback, object asyncState);
-<#+ 
+<#+
 		string returnTypeName = CSharpDomainContextGenerator.GetEndOperationReturnType(operation);
 #>		
 <#= returnTypeName #> End<#= operation.Name #>(System.IAsyncResult result);
@@ -70,7 +70,7 @@ System.AsyncCallback callback, object asyncState);
 		this.GenerateContractMethodAttributes("SubmitChanges");
 #>
 IAsyncResult BeginSubmitChanges(IEnumerable<ChangeSetEntry> changeSet, AsyncCallback callback, object asyncState);
-IEnumerable<ChangeSetEntry> EndSubmitChanges(IAsyncResult result);			
+IEnumerable<ChangeSetEntry> EndSubmitChanges(IAsyncResult result);
 <#+
 	}
 	
@@ -81,9 +81,9 @@ IEnumerable<ChangeSetEntry> EndSubmitChanges(IAsyncResult result);
 		string actionString = string.Format(CultureInfo.InvariantCulture, DomainContextGenerator.DefaultActionSchema, domainServiceName, operationName);
 		string replyActionString = string.Format(CultureInfo.InvariantCulture, DomainContextGenerator.DefaultReplyActionSchema, domainServiceName, operationName);
 		string faultActionString = string.Format(CultureInfo.InvariantCulture, DomainContextGenerator.DefaultFaultActionSchema, domainServiceName, operationName, faultTypeName);
-		
+
 #>
-[OperationContract(AsyncPattern=true, Action="<#= actionString #>", ReplyAction="<#= replyActionString #>")]	
+[OperationContract(AsyncPattern=true, Action="<#= actionString #>", ReplyAction="<#= replyActionString #>")]
 <#+
 	}
 #>

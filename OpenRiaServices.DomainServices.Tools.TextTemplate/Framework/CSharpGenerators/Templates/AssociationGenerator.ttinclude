@@ -1,14 +1,14 @@
 ﻿<#+
-    private void GenerateSingletonAssociation(PropertyDescriptor pd)
-    {
+	private void GenerateSingletonAssociation(PropertyDescriptor pd)
+	{
 		AssociationMetadata metadata = new AssociationMetadata(pd);
 		this.GenerateAssociationField(metadata);
 		this.GenerateSingletonAssociationProperty(metadata);
 		this.GenerateAssociationFilterMethod(metadata);
-    }
+	}
 
 	private void GenerateAssociationField(AssociationMetadata metadata)
-	{		
+	{
 #>
 private <#= metadata.AssociationTypeName #> <#= metadata.FieldName #>;
 <#+
@@ -29,7 +29,7 @@ private <#= metadata.AssociationTypeName #> <#= metadata.FieldName #>;
 		string propertyType = String.Empty;
 		if(metadata.IsCollection)
 		{
-			propertyType = metadata.AssociationTypeName;			
+			propertyType = metadata.AssociationTypeName;
 		}
 		else
 		{
@@ -62,24 +62,24 @@ get
 	private void GenerateSingletonAssociationPropertySetter(AssociationMetadata metadata)
 	{
 		if (metadata.IsExternal && !metadata.AssociationAttribute.IsForeignKey)
-        {
+		{
 			return;
 		}
 		
 #>
 set
-<#+  	this.GenerateOpeningBrace();
+<#+		this.GenerateOpeningBrace();
 #>
 <#= metadata.PropTypeName #> previous = this.<#= metadata.PropertyDescriptor.Name #>;
 if (previous != value)
-<#+  	this.GenerateOpeningBrace();
+<#+		this.GenerateOpeningBrace();
 #>
 this.ValidateProperty("<#= metadata.PropertyDescriptor.Name #>", value);
 <#+
 		PropertyDescriptor reverseAssociationMember = GetReverseAssociation(metadata.PropertyDescriptor, metadata.AssociationAttribute);
 		
 		bool reverseIsSingleton = false;
-		bool isBiDirectionalAssociation = (reverseAssociationMember != null) && this.CanGenerateProperty(reverseAssociationMember);	
+		bool isBiDirectionalAssociation = (reverseAssociationMember != null) && this.CanGenerateProperty(reverseAssociationMember);
 		string revName = isBiDirectionalAssociation ? reverseAssociationMember.Name : string.Empty;
 		if(isBiDirectionalAssociation && !metadata.IsExternal)
 		{
@@ -103,14 +103,14 @@ previous.<#= revName #>.Remove(this);
 previous.<#= revName #> = null;
 <#+
 			}
-				
+
 			this.GenerateClosingBrace();
 		}
 		
 		if(metadata.AssociationAttribute.IsForeignKey)
 		{
 			string[] thisKeyProps = metadata.AssociationAttribute.ThisKeyMembers.ToArray();
-    	    string[] otherKeyProps = metadata.AssociationAttribute.OtherKeyMembers.ToArray();
+			string[] otherKeyProps = metadata.AssociationAttribute.OtherKeyMembers.ToArray();
 #>
 if(value != null)
 <#+
@@ -133,7 +133,7 @@ else
 #>
 this.<#= thisKeyProps[i] #> = default(<#= foreignKeyTypeName #>);
 <#+
-			}			
+			}
 			this.GenerateClosingBrace();
 			
 			if(!metadata.IsExternal)
@@ -143,7 +143,7 @@ this.<#= thisKeyProps[i] #> = default(<#= foreignKeyTypeName #>);
 		}
 		else
 		{
-			this.GenerateSingletonAssociationPropertySetterEntitySetStatement(metadata, isBiDirectionalAssociation, reverseIsSingleton, revName);			
+			this.GenerateSingletonAssociationPropertySetterEntitySetStatement(metadata, isBiDirectionalAssociation, reverseIsSingleton, revName);
 		}
 		
 		if(!metadata.IsExternal)
@@ -187,7 +187,7 @@ value.<#= revName #> = this;
 	private void GenerateAssociationFilterMethod(AssociationMetadata metadata)
 	{		
 		string[] thisKeyProps = metadata.AssociationAttribute.ThisKeyMembers.ToArray();
-        string[] otherKeyProps = metadata.AssociationAttribute.OtherKeyMembers.ToArray();
+		string[] otherKeyProps = metadata.AssociationAttribute.OtherKeyMembers.ToArray();
 #>
 private bool Filter<#= metadata.PropertyName #>(<#= metadata.PropTypeName #> entity)
 <#+ 	this.GenerateOpeningBrace(); 
@@ -242,16 +242,16 @@ return (<#+
 #>
 get
 <#+
-		this.GenerateOpeningBrace();	
+		this.GenerateOpeningBrace();
 #>
 if(this.<#= metadata.FieldName #> == null)
 <#+
-		this.GenerateOpeningBrace();	
+		this.GenerateOpeningBrace();
 #>
 this.<#= metadata.FieldName #> = new <#= metadata.AssociationTypeName #>(this, "<#= metadata.PropertyName #>", this.Filter<#= metadata.PropertyName #><#+
 		if(isBiDirectionalCollection)
 		{
-#>, this.<#= attachMethodName #>, this.<#= detachMethodName #><#+			
+#>, this.<#= attachMethodName #>, this.<#= detachMethodName #><#+
 		}
 #>);
 <#+
@@ -266,13 +266,13 @@ return this.<#= metadata.FieldName #>;
 	
 	private void GenerateAttachMethod(AssociationMetadata metadata)
 	{
-		PropertyDescriptor reverseAssociationMember = GetReverseAssociation(metadata.PropertyDescriptor, metadata.AssociationAttribute);		
+		PropertyDescriptor reverseAssociationMember = GetReverseAssociation(metadata.PropertyDescriptor, metadata.AssociationAttribute);
 		string revName = reverseAssociationMember.Name;
 		string attachMethodName = "Attach" + metadata.PropertyName;
 #>
 private void <#= attachMethodName #>(<#= metadata.PropTypeName #> entity)
 <#+
-		this.GenerateOpeningBrace();		
+		this.GenerateOpeningBrace();
 		if(!metadata.IsCollection)
 		{
 #>
@@ -290,13 +290,13 @@ entity.<#= revName #> = this;
 	
 	private void GenerateDetachMethod(AssociationMetadata metadata)
 	{
-		PropertyDescriptor reverseAssociationMember = GetReverseAssociation(metadata.PropertyDescriptor, metadata.AssociationAttribute);		
+		PropertyDescriptor reverseAssociationMember = GetReverseAssociation(metadata.PropertyDescriptor, metadata.AssociationAttribute);
 		string revName = reverseAssociationMember.Name;
 		string detachMethodName = "Detach" + metadata.PropertyName;
 #>
 private void <#= detachMethodName #>(<#= metadata.PropTypeName #> entity)
 <#+
-		this.GenerateOpeningBrace();		
+		this.GenerateOpeningBrace();
 		if(!metadata.IsCollection)
 		{
 #>
@@ -308,7 +308,7 @@ entity.<#= revName #>.Remove(this);
 #>
 entity.<#= revName #> = null;
 <#+
-		}		
-		this.GenerateClosingBrace();	
+		}
+		this.GenerateClosingBrace();
 	}
 #>

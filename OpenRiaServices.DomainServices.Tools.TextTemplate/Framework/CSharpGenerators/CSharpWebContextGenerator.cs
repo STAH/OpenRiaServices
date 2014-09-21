@@ -36,7 +36,7 @@ namespace OpenRiaServices.DomainServices.Tools.TextTemplate.CSharpGenerators
             this.Write("\r\n");
             return this.GenerationEnvironment.ToString();
         }
- 
+
 	private void GenerateNamespace()
 	{
 		string ns = this.ClientCodeGenerator.Options.ClientRootNamespace;
@@ -65,7 +65,7 @@ this.Write("public sealed partial class WebContext : OpenRiaServices.DomainServi
 	private void GenerateConstructor()
 	{
 
-this.Write("public WebContext()\r\n{\t\t\t\r\n\tthis.OnCreated();\r\n}\r\n");
+this.Write("public WebContext()\r\n{\r\n\tthis.OnCreated();\r\n}\r\n");
 
 
 	}
@@ -80,16 +80,16 @@ this.Write("partial void OnCreated();\r\n");
 
 
 	}
-	
+
 	/// <summary>
 	/// Generates the properties on the WebContext class.
 	/// </summary>
 	protected virtual void GenerateProperties()
 	{
 
-this.Write("public new static WebContext Current\r\n{\r\n    get\r\n    {\r\n        return ((WebCont" +
-        "ext)(OpenRiaServices.DomainServices.Client.ApplicationServices.WebContextBase.Cu" +
-        "rrent));\r\n    }\r\n}\r\n");
+this.Write("public new static WebContext Current\r\n{\r\n\tget\r\n\t{\r\n\t\treturn ((WebContext)(OpenRia" +
+        "Services.DomainServices.Client.ApplicationServices.WebContextBase.Current));\r\n\t}" +
+        "\r\n}\r\n");
 
 
 		
@@ -97,9 +97,9 @@ this.Write("public new static WebContext Current\r\n{\r\n    get\r\n    {\r\n   
 		if(defaultAuthDescription != null)
 		{
 			Type genericType = null;
-            typeof(IAuthentication<>).DefinitionIsAssignableFrom(defaultAuthDescription.DomainServiceType, out genericType);
-            if ((genericType != null) && (genericType.GetGenericArguments().Count() == 1))
-            {
+			typeof(IAuthentication<>).DefinitionIsAssignableFrom(defaultAuthDescription.DomainServiceType, out genericType);
+			if ((genericType != null) && (genericType.GetGenericArguments().Count() == 1))
+			{
 				string typeName = CodeGenUtilities.GetTypeName(genericType.GetGenericArguments()[0]);
 
 this.Write("public new ");
@@ -199,9 +199,9 @@ this.Write("\r\n");
 	protected virtual void GenerateAttributes(IEnumerable<Attribute> attributes, bool forcePropagation)
 	{
 		foreach (Attribute attribute in attributes.OrderBy(a => a.GetType().Name))
-        {
+		{
 			AttributeDeclaration attributeDeclaration = AttributeGeneratorHelper.GetAttributeDeclaration(attribute, this.ClientCodeGenerator, forcePropagation);
-            if (attributeDeclaration == null || attributeDeclaration.HasErrors)
+			if (attributeDeclaration == null || attributeDeclaration.HasErrors)
 			{
 				continue;
 			}
@@ -216,10 +216,10 @@ this.Write("(");
 
 
 			if (attributeDeclaration.ConstructorArguments.Count > 0)
-            {
+			{
 				for (int i = 0; i < attributeDeclaration.ConstructorArguments.Count; i++)
-            	{
-                	object value = attributeDeclaration.ConstructorArguments[i];
+				{
+					object value = attributeDeclaration.ConstructorArguments[i];
 					string stringValue = AttributeGeneratorHelper.ConvertValueToCode(value, true);
 					
 this.Write(this.ToStringHelper.ToStringWithCulture(stringValue));
@@ -232,12 +232,12 @@ this.Write(", ");
 
 
 					}
-	            }
+				}
 			}
 			if (attributeDeclaration.NamedParameters.Count > 0)
-            {
+			{
 				if (attributeDeclaration.ConstructorArguments.Count > 0)
-            	{
+				{
 					
 this.Write(", ");
 
@@ -245,9 +245,9 @@ this.Write(", ");
 				}
 				
 				for (int i = 0; i < attributeDeclaration.NamedParameters.Count; i++)
-                {
-                    KeyValuePair<string, object> pair = attributeDeclaration.NamedParameters.ElementAt(i);
-                    string stringValue = AttributeGeneratorHelper.ConvertValueToCode(pair.Value, true);
+				{
+					KeyValuePair<string, object> pair = attributeDeclaration.NamedParameters.ElementAt(i);
+					string stringValue = AttributeGeneratorHelper.ConvertValueToCode(pair.Value, true);
 					
 this.Write(this.ToStringHelper.ToStringWithCulture(pair.Key));
 
@@ -256,14 +256,14 @@ this.Write("=");
 this.Write(this.ToStringHelper.ToStringWithCulture(stringValue));
 
 
-                    if (i + 1 < attributeDeclaration.NamedParameters.Count)
-                    {
+					if (i + 1 < attributeDeclaration.NamedParameters.Count)
+					{
 					
 this.Write(",");
 
 
-                    }
-                }
+					}
+				}
 			}
 
 this.Write(")]\r\n");
@@ -299,7 +299,7 @@ this.Write("\"");
 this.Write(")]\r\n");
 
 
-	}	
+	}
 
     }
 }

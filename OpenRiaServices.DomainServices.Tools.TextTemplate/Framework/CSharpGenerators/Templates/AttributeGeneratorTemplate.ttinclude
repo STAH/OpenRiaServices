@@ -16,9 +16,9 @@
 	protected virtual void GenerateAttributes(IEnumerable<Attribute> attributes, bool forcePropagation)
 	{
 		foreach (Attribute attribute in attributes.OrderBy(a => a.GetType().Name))
-        {
+		{
 			AttributeDeclaration attributeDeclaration = AttributeGeneratorHelper.GetAttributeDeclaration(attribute, this.ClientCodeGenerator, forcePropagation);
-            if (attributeDeclaration == null || attributeDeclaration.HasErrors)
+			if (attributeDeclaration == null || attributeDeclaration.HasErrors)
 			{
 				continue;
 			}
@@ -27,35 +27,35 @@
 #>
 [<#=  attributeTypeName #>(<#+
 			if (attributeDeclaration.ConstructorArguments.Count > 0)
-            {
+			{
 				for (int i = 0; i < attributeDeclaration.ConstructorArguments.Count; i++)
-            	{
-                	object value = attributeDeclaration.ConstructorArguments[i];
+				{
+					object value = attributeDeclaration.ConstructorArguments[i];
 					string stringValue = AttributeGeneratorHelper.ConvertValueToCode(value, true);
 					#><#= stringValue #><#+
 					if (i + 1 < attributeDeclaration.ConstructorArguments.Count)
 					{
 					#>, <#+
 					}
-	            }
+				}
 			}
 			if (attributeDeclaration.NamedParameters.Count > 0)
-            {
+			{
 				if (attributeDeclaration.ConstructorArguments.Count > 0)
-            	{
+				{
 					#>, <#+
 				}
 				
 				for (int i = 0; i < attributeDeclaration.NamedParameters.Count; i++)
-                {
-                    KeyValuePair<string, object> pair = attributeDeclaration.NamedParameters.ElementAt(i);
-                    string stringValue = AttributeGeneratorHelper.ConvertValueToCode(pair.Value, true);
+				{
+					KeyValuePair<string, object> pair = attributeDeclaration.NamedParameters.ElementAt(i);
+					string stringValue = AttributeGeneratorHelper.ConvertValueToCode(pair.Value, true);
 					#><#= pair.Key #>=<#= stringValue #><#+
-                    if (i + 1 < attributeDeclaration.NamedParameters.Count)
-                    {
+					if (i + 1 < attributeDeclaration.NamedParameters.Count)
+					{
 					#>,<#+
-                    }
-                }
+					}
+				}
 			}
 #>)]
 <#+
@@ -74,5 +74,5 @@
 		}
 #>)]
 <#+
-	}	
+	}
 #>

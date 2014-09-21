@@ -12,7 +12,7 @@
 			this.GenerateCustomMethod(domainMethod);
 		}
 	}
-	
+
 	/// <summary>
 	/// Generates a custom method.
 	/// </summary>
@@ -54,7 +54,7 @@ public void <#= domainMethod.Name #>(<#+
 <#+
 		this.GenerateClosingBrace();
 	}
-	
+
 	/// <summary>
 	/// Generates the EntitySet properties.
 	/// </summary>
@@ -65,7 +65,7 @@ public void <#= domainMethod.Name #>(<#+
 			this.GenerateEntitySet(entityType);
 		}
 	}
-	
+
 	/// <summary>
 	/// Generates the EntitySet property.
 	/// </summary>
@@ -77,14 +77,14 @@ public void <#= domainMethod.Name #>(<#+
 #>
 public EntitySet<<#= entityTypeName #>> <#= propertyName #>
 {
-    get
-    {
-        return base.EntityContainer.GetEntitySet<<#= entityTypeName #>>();
-    }
+	get
+	{
+		return base.EntityContainer.GetEntitySet<<#= entityTypeName #>>();
+	}
 }
 <#+
 	}
-	
+
 	/// <summary>
 	/// Generates the query methods.
 	/// </summary>
@@ -95,7 +95,7 @@ public EntitySet<<#= entityTypeName #>> <#= propertyName #>
 			this.GenerateQueryMethod(queryMethod);
 		}
 	}
-	
+
 	/// <summary>
 	/// Generates a query method.
 	/// </summary>
@@ -107,14 +107,14 @@ public EntitySet<<#= entityTypeName #>> <#= propertyName #>
 		this.GenerateOpeningBrace();
 		this.GenerateEntityQueryMethodBody(domainOperationEntry, queryMethodName);
 		this.GenerateClosingBrace();
-	}	
+	}
 	
 	private void GenerateEntityQueryMethodDeclaration(DomainOperationEntry domainOperationEntry, string queryMethodName)
-	{		
+	{
 		// First generate custom attributes for the qery method
 		IEnumerable<Attribute> methodAttributes = domainOperationEntry.Attributes.Cast<Attribute>();
 		this.GenerateAttributes(methodAttributes);
-				
+
 #>
 public EntityQuery<<#= this.GetEntityQueryMethodElementReturnTypeName(domainOperationEntry) #>> <#= queryMethodName #>(<#+
 	this.GenerateParameterDeclaration(domainOperationEntry.Parameters.AsEnumerable(), true);
@@ -123,7 +123,7 @@ public EntityQuery<<#= this.GetEntityQueryMethodElementReturnTypeName(domainOper
 	}
 	
 	private void GenerateEntityQueryMethodBody(DomainOperationEntry domainOperationEntry, string queryMethodName)
-	{	
+	{
 		string parameterDictionaryName = this.GenerateServiceOpMethodBody(domainOperationEntry, queryMethodName);
 		this.GenerateEntityQueryMethodReturn(domainOperationEntry, parameterDictionaryName);
 	}
@@ -131,10 +131,10 @@ public EntityQuery<<#= this.GetEntityQueryMethodElementReturnTypeName(domainOper
 	private void GenerateEntityQueryMethodReturn(DomainOperationEntry domainOperationEntry, string parameterDictionaryName)
 	{
 		QueryAttribute queryAttribute = (QueryAttribute)domainOperationEntry.OperationAttribute;
-		
+
 #>
 return base.CreateQuery<<#= this.GetEntityQueryMethodElementReturnTypeName(domainOperationEntry) #>>("<#= domainOperationEntry.Name #>", <#= parameterDictionaryName #>, <#= CodeGenUtilities.GetBooleanString(queryAttribute.HasSideEffects, true) #>, <#= CodeGenUtilities.GetBooleanString(queryAttribute.IsComposable, true) #>);
-<#+	
+<#+
 	}
 	
 	private string GetEntityQueryMethodElementReturnTypeName(DomainOperationEntry domainOperationEntry)
