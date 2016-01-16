@@ -420,6 +420,12 @@ namespace OpenRiaServices.DomainServices.Tools
                 propertyAttributes.RemoveAll(attr => attr.GetType() == typeof(RoundtripOriginalAttribute));
             }
 
+            // Here we check for database generated fields. In that case we strip any RequiredAttribute from the property.
+            if (propertyAttributes.Any(a=>a.GetType().Name == "DatabaseGeneratedAttribute"))
+            {
+                propertyAttributes.RemoveAll(attr => attr.GetType() == typeof (RequiredAttribute));
+            }
+
             // Here, we check for the presence of a complex type. If it exists we need to add a DisplayAttribute
             // if not already there. DataSources windows do not handle complex types
             if (TypeUtility.IsSupportedComplexType(propertyType) && !propertyAttributes.OfType<DisplayAttribute>().Any())

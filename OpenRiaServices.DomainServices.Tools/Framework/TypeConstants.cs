@@ -175,6 +175,22 @@
         /// </remarks>
         public const string IEnumerableFullName = "System.Collections.Generic.IEnumerable";
 
+        /// <summary>
+        /// The 'OpenRiaServices.DomainServices.Client.HasSideEffects' type name.
+        /// </summary>
+        /// <remarks>
+        /// Used during code generation.
+        /// </remarks>
+        public const string HasSideEffectsFullName = "OpenRiaServices.DomainServices.Client.HasSideEffects";
+
+        /// <summary>
+        /// The 'OpenRiaServices.DomainServices.Client.EntityActionAttribute' type name.
+        /// </summary>
+        /// <remarks>
+        /// Used during code generation.
+        /// </remarks>
+        public const string EntityActionAttributeFullName = "OpenRiaServices.DomainServices.Client.EntityAction";
+
         // TODO: Enable when WebContextGenerator.cs supports Forms Authentication.  
         ///// <summary>
         ///// The 'OpenRiaServices.DomainServices.Client.ApplicationServices.FormsAuthentication' type name.

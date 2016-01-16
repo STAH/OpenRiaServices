@@ -28,6 +28,7 @@ namespace OpenRiaServices.DomainServices.Tools
         // MEF composition container and part catalog, computed lazily and only once
         private CompositionContainer _compositionContainer;
         private ComposablePartCatalog _partCatalog;
+        private const string OpenRiaServices_DomainServices_Server_Assembly = "OpenRiaServices.DomainServices.Server.dll";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientCodeGenerationDispatcher"/> class.
@@ -54,12 +55,78 @@ namespace OpenRiaServices.DomainServices.Tools
             Debug.Assert(parameters != null, "parameters cannot be null");
             Debug.Assert(loggingService != null, "loggingService cannot be null");
 
-            AppDomainUtilities.ConfigureAppDomain(options);
-
-            using (SharedCodeService sharedCodeService = new SharedCodeService(parameters, loggingService))
+            try
             {
-                CodeGenerationHost host = new CodeGenerationHost(loggingService, sharedCodeService);
-                return this.GenerateCode(host, options, parameters.ServerAssemblies, codeGeneratorName);
+                AppDomainUtilities.ConfigureAppDomain(options);
+                LoadOpenRiaServicesServerAssembly(parameters, loggingService);
+
+                using (SharedCodeService sharedCodeService = new SharedCodeService(parameters, loggingService))
+                {
+                    CodeGenerationHost host = new CodeGenerationHost(loggingService, sharedCodeService);
+                    return this.GenerateCode(host, options, parameters.ServerAssemblies, codeGeneratorName);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Fatal exceptions are never swallowed or processed
+                if (ex.IsFatal())
+                {
+                    throw;
+                }
+
+                // Any exception from the code generator is caught and reported, otherwise it will
+                // hit the MSBuild backstop and report failure of the custom build task.
+                // It is acceptable to report this exception and "ignore" it because we
+                // are running in a separate AppDomain which will be torn down immediately
+                // after our return.
+                loggingService.LogError(string.Format(CultureInfo.CurrentCulture,
+                                                Resource.ClientCodeGenDispatecher_Threw_Exception_Before_Generate,
+                                                ex.Message));
+                loggingService.LogException(ex);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Tries to loads the OpenRiaServices.DomainServices.Server assembly from the server projects references.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="loggingService">The logging service.</param>
+        private static void LoadOpenRiaServicesServerAssembly(SharedCodeServiceParameters parameters, ILoggingService loggingService)
+        {
+            // Try to load the OpenRiaServices.DomainServies.Server assembly using the one used by the server project
+            // This way we can be sure that codegen works with both signed and unsigned server assembly while
+            // making sure that only a single version is loaded
+            var filename = OpenRiaServices_DomainServices_Server_Assembly;
+            var serverAssemblyPath = parameters.ServerAssemblies.FirstOrDefault(sa => sa.EndsWith(filename));
+            if (serverAssemblyPath != null)
+            {
+                var serverAssembly = AssemblyUtilities.LoadAssembly(serverAssemblyPath, loggingService);
+                if (serverAssembly != null)
+                {
+                    // Since this assembly (OpenRiaServices.DomainServices.Tools) requires the Server assembly to be loaded
+                    // before the final call to AssemblyUtilities.SetAssemblyResolver (when the DomainServiceCatalog is instanciated)
+                    // we need to setup our assembly resolver with the server assembly in case the server version is signed
+                    // but this version is unsigned
+#if SIGNED
+                    if (!serverAssembly.GetName().IsSigned())
+                    {
+                        loggingService.LogWarning(Resource.ClientCodeGen_SignedTools_UnsignedServer);
+                    }
+#else
+                    AssemblyUtilities.SetAssemblyResolver(new[] { serverAssembly });
+#endif
+                }
+                else
+                {
+                    loggingService.LogError(string.Format(CultureInfo.CurrentCulture,
+                        Resource.ClientCodeGen_Failed_Loading_OpenRiaServices_Assembly, filename, serverAssemblyPath));
+                }
+
+            }
+            else
+            {
+                loggingService.LogError(string.Format(CultureInfo.CurrentCulture, Resource.ClientCodeGen_Missing_OpenRiaServices_Reference, filename));
             }
         }
 

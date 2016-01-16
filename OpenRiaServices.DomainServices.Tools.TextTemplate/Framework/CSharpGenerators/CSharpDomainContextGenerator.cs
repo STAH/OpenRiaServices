@@ -690,7 +690,7 @@ this.Write("\r\n");
 	private void GenerateContractMethod(DomainOperationEntry operation)
 	{
 
-this.Write("[HasSideEffects(");
+this.Write("[OpenRiaServices.DomainServices.Client.HasSideEffects(");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(DomainContextGenerator.OperationHasSideEffects(operation).ToString().ToLower()));
 

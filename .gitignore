@@ -50,6 +50,7 @@ System.Test.xap
 *.scc
 *.xap
 ProjectPath.txt
+activeconnections.txt
 
 # Visual C++ cache files
 ipch/

@@ -16,7 +16,7 @@ namespace OpenRiaServices.DomainServices.Client
     /// <summary>
     /// Represents a collection of <see cref="Entity"/> instances.
     /// </summary>
-    public abstract class EntitySet : IEnumerable, INotifyCollectionChanged, IRevertibleChangeTracking, INotifyPropertyChanged
+    public abstract class EntitySet : IEnumerable, ICollection, INotifyCollectionChanged, IRevertibleChangeTracking, INotifyPropertyChanged
     {
         private Dictionary<AssociationAttribute, Action<Entity>> _associationUpdateCallbackMap = new Dictionary<AssociationAttribute, Action<Entity>>();
         private Type _entityType;
@@ -275,8 +275,14 @@ namespace OpenRiaServices.DomainServices.Client
 
         /// <summary>
         /// Notifies any registered association update callbacks that the specified property
-        /// has changed.
+        /// has changed. This notifies all associations pointing <c>to</c> the entity.
         /// </summary>
+        /// <remarks>
+        /// This seems to only be used to update references pointing to the entity in questions, 
+        /// The <see cref="EntityCollection{TEntity}.ParentEntityPropertyChanged(object, PropertyChangedEventArgs)"/>
+        /// and <see cref="EntityRef{TEntity}.ParentEntityPropertyChanged(object, PropertyChangedEventArgs)"/>
+        /// seems to be used to handle updates to associations going <c>from</c> the entity.
+        /// </remarks>
         /// <param name="entity">The entity that was updated.</param>
         /// <param name="propertyName">The name of the property that was changed.</param>
         internal void UpdateRelatedAssociations(Entity entity, string propertyName)
@@ -917,6 +923,15 @@ namespace OpenRiaServices.DomainServices.Client
         }
         #endregion
 
+        #region ICollection Members
+        bool ICollection.IsSynchronized { get { return false; } }
+        object ICollection.SyncRoot { get { return _list.SyncRoot; } }
+        void ICollection.CopyTo(Array array, int index)
+        {
+            this._list.CopyTo(array, index);
+        }
+        #endregion
+
         #region INotifyCollectionChanged Members
 
         /// <summary>
@@ -1197,7 +1212,7 @@ namespace OpenRiaServices.DomainServices.Client
     /// Represents a collection of <see cref="Entity"/> instances, providing change tracking and other services.
     /// </summary>
     /// <typeparam name="TEntity">The type of <see cref="Entity"/> this set will contain</typeparam>
-    public sealed class EntitySet<TEntity> : EntitySet, IEnumerable<TEntity>, ICollectionViewFactory where TEntity : Entity
+    public sealed class EntitySet<TEntity> : EntitySet, IEnumerable<TEntity>, ICollection<TEntity>, ICollectionViewFactory where TEntity : Entity
     {
         /// <summary>
         /// Initializes a new instance of the EntitySet class
@@ -1324,6 +1339,36 @@ namespace OpenRiaServices.DomainServices.Client
         IEnumerator<TEntity> IEnumerable<TEntity>.GetEnumerator()
         {
             return this.GetEnumerator();
+        }
+        #endregion
+
+        #region ICollection<TEntity> Members
+        void ICollection<TEntity>.CopyTo(TEntity[] array, int arrayIndex)
+        {
+            ((IList<TEntity>)List).CopyTo(array, arrayIndex);
+        }
+
+        bool ICollection<TEntity>.Contains(TEntity item)
+        {
+            return base.Contains(item);
+        }
+
+        bool ICollection<TEntity>.Remove(TEntity item)
+        {
+            try
+            {
+                // Ordinary remove throws on error, so if it did not then we can return true
+                Remove(item);
+                return true;
+            }
+            catch (InvalidOperationException ioe)
+            {
+                // If the entiy was not part of the set return false
+                if (ioe.Message == Resource.EntitySet_EntityNotInSet)
+                    return false;
+                else
+                    throw;
+            }
         }
         #endregion
 
